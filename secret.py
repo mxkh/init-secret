@@ -4,21 +4,27 @@ from botocore.exceptions import ClientError
 
 def getSecretKeys():
     """Returns only the secret manager environment variables"""
-    secretKeys = dict()
-    for (key, value) in os.environ.items():
-        if( key.startswith("SM_")):
+    secretKeys = {}
+    for key, value in os.environ.items():
+        if key.startswith("SM_"):
             secretKeys[key] = value
-    if(bool(secretKeys)):
+    if secretKeys:
         return secretKeys
     else:
         raise ValueError("Secrets Manager environment variable key not found, make sure there is atleast an env var with 'SM_' prefix for the init-container")
 
 def getSecretFileName():
-    secretFile = os.environ["SECRET_FILE_PATH"]
+    try:
+        secretFile = os.environ["SECRET_FILE_PATH"]
+    except KeyError:
+        raise ValueError("Cannot Find the Secret file Path")
     return secretFile
 
 def get_secret(secret_name):
-    region_name = os.environ["AWS_REGION"]
+    try:
+        region_name = os.environ["AWS_REGION"]
+    except KeyError:
+        raise ValueError("Cannot Find AWS Region")
     session = boto3.session.Session()
     client = session.client(
         service_name='secretsmanager',
@@ -59,11 +65,7 @@ def loadSecret(prefix, secret_name, secretFile):
 print("Running init container script")
 allSecrets = getSecretKeys()
 secretFileName = getSecretFileName()
-secretFile = open(secretFileName,"w")
-try:
-    for (key, secret_name) in allSecrets.items():
-        prefix = key.split("_")[1] + "_"
+with open(secretFileName,"w") as secretFile:
+    for key, secret_name in allSecrets.items():
+        prefix = f'{key.split("_")[1]}_'
         loadSecret(prefix, secret_name, secretFile)
-finally:
-    secretFile.close()
-    print("Exiting init container script")
