@@ -11,20 +11,20 @@ def getSecretKeys():
     if secretKeys:
         return secretKeys
     else:
-        raise ValueError("Secrets Manager environment variable key not found, make sure there is atleast an env var with 'SM_' prefix for the init-container")
+        raise ValueError("Cannot fine the Secrets Manager environment variable key, make sure there is atleast an env var with 'SM_' prefix for the init-container")
 
 def getSecretFileName():
     try:
         secretFile = os.environ["SECRET_FILE_PATH"]
     except KeyError:
-        raise ValueError("Cannot Find the Secret file Path")
+        raise ValueError("Cannot find the secret file path, make sure there is an env var SECRET_FILE_PATH for the init-container")
     return secretFile
 
 def get_secret(secret_name):
     try:
         region_name = os.environ["AWS_REGION"]
     except KeyError:
-        raise ValueError("Cannot Find AWS Region")
+        raise ValueError("Cannot find the AWS Region, make sure there is an env var AWS_REGION for the init-container")
     session = boto3.session.Session()
     client = session.client(
         service_name='secretsmanager',
