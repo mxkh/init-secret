@@ -11,7 +11,7 @@ def getSecretKeys():
     if secretKeys:
         return secretKeys
     else:
-        raise ValueError("Cannot fine the Secrets Manager environment variable key, make sure there is atleast an env var with 'SM_' prefix for the init-container")
+        raise ValueError("Cannot find the Secrets Manager environment variable key, make sure there is atleast an env var with 'SM_' prefix for the init-container")
 
 def getSecretFileName():
     try:
