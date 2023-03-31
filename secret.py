@@ -59,7 +59,7 @@ def loadSecret(prefix, secret_name, secretFile):
     #             "port": 3306
     #         }
     for key, value in secret.items():
-        secretFile.write(prefix + key.upper() + "=" + "'" + str(value) + "'" + "\n")
+        secretFile.write(prefix + key.upper() + "=" + value + "\n")
     print("Done fetching secrets", secret_name)
 
 print("Running init container script")
